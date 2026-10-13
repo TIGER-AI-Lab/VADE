@@ -577,7 +577,7 @@
       .map((r) => ({ r, x: axis === "cost" ? r.cost : r.minutes, y: r.overall, maker: makerOf(r.model) }));
     const W = Math.max(300, Math.round(width || 1000)), narrow = W < 640;
     const H = narrow ? Math.round(W * 1.15) : Math.max(320, Math.min(400, Math.round(W * 0.38)));
-    const ts = narrow ? 9 : 12, fs = narrow ? 11 : 12.5;  // tile half-size, label font size
+    const ts = narrow ? 9 : 12, fs = narrow ? 11 : 12;  // tile half-size, label font size
     const L = narrow ? 44 : 56, R = narrow ? 10 : 24, T = 18, B = 44;
     const box = h("div", { class: "sc" });
     if (!pts.length) return box;
@@ -896,7 +896,7 @@
   /* ------------------------------------------------------------------ sub-pages (step pages, task pages) */
 
   const taskScroll = new Map();
-  let activeTask = null, returningTask = false;
+  let activeTask = null, returningTask = false, pendingStage = null;  // pendingStage: a step page link asked to open this step of the task
   let overlayOpen = false, view = null, pipeline = null, timers = [], lastScroll = 0, bankScroll = 0, spy = null;
   function clearTimers() { timers.forEach(clearTimeout); timers = []; }
   function openOverlay(next) {
@@ -973,12 +973,35 @@
           h("p", { class: "lead", text: st.description }),
         ),
         h("dl", { class: "sp-dl" }, rows.map(([k, v]) => h("div", { class: k === "Does not see" ? "row hidden" : "row" }, h("dt", { text: k }), h("dd", { text: v })))),
+        stageExamples(key, i),
         h("nav", { class: "sp-nav" },
           prev ? h("a", { href: prev.href }, h("small", { text: "Previous step" }), prev.label) : h("span"),
           next ? h("a", { href: next.href, class: "next" }, h("small", { text: "Next step" }), next.label) : h("span"))));
     const move = slidingIndicator(mini, ".current", previous);
     const resize = new ResizeObserver(() => { if (!mini.isConnected) resize.disconnect(); else move(); });
     resize.observe(mini);
+  }
+
+  // Tasks from the bank that show this step: one that passed it directly and, when there is one, one
+  // it sent back for correction or edited. Examples come from the five opening tasks of each domain
+  // where possible; the directly passing example rotates across them from step to step.
+  function stageExamples(key, i) {
+    const lead = ["finance", "law"].flatMap((d) => S.tasks.filter((t) => t.domain === d).slice(0, 5));
+    const pick = (status, rotate) => {
+      const pool = lead.filter((t) => t.stage_status[i] === status);
+      return pool.length ? pool[rotate ? i % pool.length : 0] : S.tasks.find((t) => t.stage_status[i] === status);
+    };
+    const ex = [[pick("passed", true), "passed directly"], [pick("returned"), "sent back, corrected, then passed"],
+      [pick("edited"), "wording edited, then passed"]].filter(([t]) => t);
+    const paper = S.links.find((l) => /arxiv|paper/i.test(l.label) && safeUrl(l.url));
+    return h("section", { class: "sp-examples" },
+      h("h2", { text: "See this step in a task" }),
+      ex.length ? h("ul", {}, ex.map(([t, label]) => h("li", {},
+        h("a", { href: `#task-${encodeURIComponent(t.id)}`, onclick: () => { pendingStage = key; } },
+          h("span", { class: "mono", text: publicId(t.id) }), ` ${t.title}`),
+        h("span", { class: "muted", text: ` · ${label}` })))) : null,
+      h("p", { class: "muted" }, ex.length ? "Each link opens the task at this step of its construction history. " : "",
+        "For more detail on this step, see ", paper ? h("a", { href: paper.url, target: "_blank", rel: "noopener noreferrer", text: "the paper" }) : "the paper", "."));
   }
 
   /* discovery routes page */
@@ -1193,6 +1216,17 @@
       });
     }
     play();
+    if (pendingStage) {
+      const target = document.getElementById(`stage-${pendingStage}`);
+      pendingStage = null;
+      if (target) {
+        const history = target.querySelector("details.lineage-events");
+        if (history) history.open = true;
+        requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+        target.classList.add("flash");
+        setTimeout(() => target.classList.remove("flash"), 1600);
+      }
+    }
     if (returningTask && taskScroll.has(t.id)) requestAnimationFrame(() => { if (view === "task" && activeTask === t.id) d.scrollTop = taskScroll.get(t.id); });
   }
 
