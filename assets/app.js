@@ -347,12 +347,9 @@
       const lg = $("#pipe-legend");
       lg.textContent = "";
       append(lg, [
-        h("span", {}, h("i", { style: `background:${C.blue};width:5px;height:5px` }), "source material"),
-        h("span", {}, h("i", { style: `background:${C.green}` }), "a candidate, growing as steps add to it"),
-        h("span", {}, h("i", { style: `background:#fff;border:1.5px solid ${C.green}` }), "the independent reproduction"),
         h("span", {}, h("b", { class: "dash", style: `border-color:${C.red}` }), "defect sent back for repair"),
-        h("span", {}, h("i", { style: `background:${C.gray}` }), "candidates leaving at a step (share of those entering it)"),
-        h("span", { class: "eye" }, icon("eye-off", C.red, 13, 2.2), "step that does not see the reference analysis or answers"),
+        h("span", {}, h("i", { style: `background:${C.gray}` }), "share of candidates leaving at a step"),
+        h("span", { class: "eye" }, icon("eye-off", C.red, 13, 2.2), "step that does not see the reference answer"),
       ]);
     }
 
