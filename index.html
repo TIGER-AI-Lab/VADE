@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VADE</title>
+<meta name="description" content="VADE turns the sources professionals work from into open-ended analysis tasks.">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
+</head>
+<body>
+<header class="topbar" id="topbar"></header>
+
+<section class="hero" id="top">
+  <div class="hero-copy" id="hero-copy"></div>
+</section>
+
+<main>
+  <section class="band" id="pipeline-sec">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Pipeline</h2>
+        <p>How every task is built, from professional sources to an accepted task. Click a step for what it does.</p>
+      </div>
+    </div>
+    <div class="pipeline-wrap" id="pipeline-wrap">
+      <svg id="pipeline" role="img" aria-label="Animated diagram of the VADE authoring pipeline"></svg>
+      <div class="pipe-tip" id="pipe-tip" hidden></div>
+    </div>
+    <div class="pipe-legend" id="pipe-legend"></div>
+    <div class="wrap pipeline-entry"><p class="muted small">Exit rates are those of the Finance task build reported in the paper.</p><a class="entry-btn" href="#step-discovery">Explore the pipeline →</a></div>
+  </section>
+
+  <section class="band" id="results">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Leaderboard</h2>
+        <p id="results-note">Pass rate, cost and time per task for each model. A task passes only when all of its scoring criteria are met.</p>
+      </div>
+      <div class="tabs" id="result-tabs" role="tablist"></div>
+      <div class="results" id="results-body"></div>
+    </div>
+  </section>
+
+  <section class="band" id="tasks">
+    <div class="wrap entry">
+      <div>
+        <h2>Task bank <span class="preview-label">preview</span></h2>
+        <p>A preview of finished tasks from the pipeline: the question as delivered, its reference analysis, scoring criteria and supporting quotations, each linked to the original source. The full task collection will be released later.</p>
+      </div>
+      <a class="entry-btn" href="#bank">Browse the task bank →</a>
+    </div>
+  </section>
+</main>
+
+<div class="detail" id="detail" hidden aria-modal="true" role="dialog"></div>
+
+<script src="data/site.js"></script>
+<script src="assets/icons.js"></script>
+<script src="assets/vendor/katex/katex.min.js"></script>
+<script src="assets/math.js"></script>
+<script src="assets/review.js?v=20261011-reviewer-final"></script>
+<script src="assets/app.js?v=20261011-reviewer-final"></script>
+</body>
+</html>
