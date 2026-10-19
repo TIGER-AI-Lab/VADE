@@ -113,6 +113,7 @@
     onScroll();
   }
   function renderHeroCopy() {
+    $("#hero-copy").textContent = "";  // the page source carries a static copy of the title for crawlers
     append($("#hero-copy"), [
       h("h1", { text: S.project.name }),
       h("p", { class: "title", text: S.project.title }),
