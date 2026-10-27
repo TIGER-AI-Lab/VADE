@@ -818,7 +818,7 @@
     names.forEach((n) => {
       tabs.append(h("button", { class: "tab", role: "tab", "data-k": n,
         onclick: () => show(n) }, n,
-        (n === "Law" || preview[n]) ? h("span", { class: "pv", text: "preview" }) : null));
+        preview[n] ? h("span", { class: "pv", text: "preview" }) : null));
     });
     moveTabs = slidingIndicator(tabs, '[aria-selected="true"]');
     if (names.length) show(current);

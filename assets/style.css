@@ -695,7 +695,7 @@ span.pbtn { cursor: default; }
 .hero { padding: 120px 24px 48px; }
 .hero .title { font: 500 clamp(13px, 1.25vw, 15.5px)/1.6 var(--sans); font-style: normal; letter-spacing: .14em; color: var(--muted); margin: 16px auto 22px; max-width: 640px; }
 .hero .paper-links { margin: 0; }
-#pipeline-sec { padding-top: 64px; }
+main > .band:first-child { padding-top: 64px; }
 /* pipeline legend and entry line stay inside the content width */
 .pipe-legend { max-width: 1160px; margin: 8px auto 0; padding: 0 24px; }
 .pipeline-entry { align-items: center; flex-wrap: wrap; gap: 12px 20px; }
