@@ -392,6 +392,7 @@ span.pbtn { cursor: default; }
 
 /* ------------------------------------------------------------ leaderboard */
 .lb-head h3 { margin: 0 0 6px; font-size: 20px; }
+.lb-head .lb-version { margin-top: 12px; }
 .lb-lead { margin: 0; color: var(--muted); }
 .lb-lead b { color: var(--ink); font-weight: 600; }
 .lb-head .live { margin: 14px 0 0; max-width: 620px; }

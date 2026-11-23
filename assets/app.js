@@ -663,13 +663,8 @@
     return box;
   }
 
-  // The Finance tab displays the current v1.1 results; archived v1 data is not shown.
-  function previewStatus() {
-    return h("div", { class: "live", role: "status" },
-      h("div", { class: "live-head" }, h("span", { class: "live-dot", "aria-hidden": "true" }),
-        h("b", { text: "Pipeline running" })),
-      h("p", { text: "Evaluation is ongoing. Results may change as the pipeline progresses." }));
-  }
+  // Finance has two task-set versions: V1 (S.results.Finance) and V1.1 (S.result_versions.Finance["v1.1"]).
+  const FIN_VERSIONS = [["v1", "V1"], ["v1.1", "V1.1"]];
   function slidingIndicator(container, selector, previous = null) {
     const indicator = h("i", { class: "sliding-indicator", "aria-hidden": "true" });
     container.classList.add("has-slider");
@@ -708,14 +703,15 @@
   function renderResults() {
     const tabs = $("#result-tabs"), body = $("#results-body");
     const names = Object.keys(S.results || {});
-    const preview = { Energy: true, Medicine: true };
+    let finVer = "v1";
     let moveTabs = () => {};
     let current = names[0], axis = "cost", sort = { key: "overall", dir: -1 }, redraw = null, lastW = 0, rt = 0;
     window.addEventListener("resize", () => {
       clearTimeout(rt);
       rt = setTimeout(() => { moveTabs(); if (redraw && body.clientWidth !== lastW) { lastW = body.clientWidth; redraw(); } }, 150);
     });
-    const blockOf = (name) => name === "Finance" ? S.result_versions.Finance["v1.1"] : S.results[name];
+    const hasV11 = () => Boolean(S.result_versions && S.result_versions.Finance && S.result_versions.Finance["v1.1"]);
+    const blockOf = (name) => name === "Finance" && finVer === "v1.1" && hasV11() ? S.result_versions.Finance["v1.1"] : S.results[name];
     function show(name) {
       current = name;
       tabs.querySelectorAll(".tab").forEach((t) => {
@@ -736,7 +732,9 @@
         lead.length >= 3 ? h("p", { class: "lb-lead" },
           h("b", { text: lead[0].model }), ` ranks first with ${fmtPct(lead[0].overall)}%, followed by `,
           h("b", { text: lead[1].model }), ` (${fmtPct(lead[1].overall)}%) and `, h("b", { text: lead[2].model }), ` (${fmtPct(lead[2].overall)}%).`) : null,
-        previewStatus()));
+        name === "Finance" && hasV11() ? h("div", { class: "seg lb-version", role: "group", "aria-label": "Finance version" },
+          FIN_VERSIONS.map(([k, t]) => h("button", { type: "button", class: finVer === k ? "on" : "", "aria-pressed": String(finVer === k),
+            onclick: () => { if (finVer !== k) { finVer = k; show("Finance"); } }, text: t }))) : null));
 
       // chart
       const makers = [...new Set(byRate.map((r) => makerOf(r.model).name))].map((n) => MAKERS.find((m) => m[1] === n));
@@ -807,8 +805,7 @@
       const notes = [
         "Cost per task: each model's mean tokens per task at its list API prices, with cached input and cache writes at their cache rates.",
         block.time_basis?.includes("model time") ? "Time per task: median model and tool execution time." : "Time per task: median elapsed time per run.",
-        hasExtra ? "† Not in the paper's table." : null,
-        preview[name] ? `${name} is a preview set from a smaller, experimental run.` : null].filter(Boolean);
+        hasExtra ? "† Not in the paper's table." : null].filter(Boolean);
       append(body, [h("div", { class: "lb-card" },
         h("div", { class: "lb-table-wrap" }, h("table", { class: "lb-table" }, thead, tbody))),
         name === "Finance" ? h("div", { class: "analysis-entry" }, h("p", { text: "Explore model responses and the reasons behind their scores." }),
@@ -817,8 +814,7 @@
     }
     names.forEach((n) => {
       tabs.append(h("button", { class: "tab", role: "tab", "data-k": n,
-        onclick: () => show(n) }, n,
-        preview[n] ? h("span", { class: "pv", text: "preview" }) : null));
+        onclick: () => show(n) }, n));
     });
     moveTabs = slidingIndicator(tabs, '[aria-selected="true"]');
     if (names.length) show(current);
