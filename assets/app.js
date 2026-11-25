@@ -85,8 +85,9 @@
     if (!shown.length) return null;
     return h("nav", { class: "paper-links", "aria-label": "Paper and resources" }, shown.map((l) => {
       const mark = (window.VADE_MARKS || {})[l.icon];
-      const glyph = mark
-        ? sv("svg", { width: 15, height: 15, viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true" }, sv("path", { d: mark }))
+      const layers = typeof mark === "string" ? [{ d: mark }] : mark;
+      const glyph = layers
+        ? sv("svg", { width: 15, height: 15, viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true" }, layers.map((a) => sv("path", a)))
         : icon(l.icon, "currentColor", 15, 2);
       return safeUrl(l.url) ? h("a", { class: "pbtn", href: l.url, target: "_blank", rel: "noopener" }, glyph, l.label)
         : h("span", { class: "pbtn", "aria-disabled": "true" }, glyph, l.label);
